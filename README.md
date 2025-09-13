@@ -38,12 +38,18 @@ Shell Completions
 ### Automatic Installation
 
 Use the helper script to auto-detect your shell and install completions:
+
 ```bash
-./install-completions.sh        # Auto-detect current shell
-./install-completions.sh bash   # Install for bash only
-./install-completions.sh zsh    # Install for zsh only
-./install-completions.sh fish   # Install for fish only
-./install-completions.sh all    # Install for all shells
+./install-completions.sh                  # Auto-detect current shell
+./install-completions.sh bash             # Install for bash only
+./install-completions.sh zsh              # Install for zsh only
+./install-completions.sh fish             # Install for fish only
+./install-completions.sh all              # Install for all shells
+
+# Dry-run to see what would be installed
+./install-completions.sh --dry-run        # Check auto-detection
+./install-completions.sh --dry-run all    # Check all shells
+./install-completions.sh --whatif zsh     # Alternative dry-run syntax
 ```
 
 ### Manual Installation

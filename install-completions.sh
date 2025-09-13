@@ -4,6 +4,47 @@
 set -e
 
 BINARY="whisper-wrapper"
+DRY_RUN=false
+
+# Parse flags
+while [[ $# -gt 0 ]]; do
+	case $1 in
+	--dry-run | --whatif | --what-if | -n)
+		DRY_RUN=true
+		shift
+		;;
+	-h | --help)
+		echo "Usage: $0 [OPTIONS] [SHELL]"
+		echo ""
+		echo "Install shell completions for whisper-wrapper"
+		echo ""
+		echo "SHELL:"
+		echo "  auto    Auto-detect current shell (default)"
+		echo "  bash    Install for bash only"
+		echo "  zsh     Install for zsh only"
+		echo "  fish    Install for fish only"
+		echo "  all     Install for all shells"
+		echo ""
+		echo "OPTIONS:"
+		echo "  -n, --dry-run, --whatif    Show what would be installed without doing it"
+		echo "  -h, --help                 Show this help message"
+		echo ""
+		echo "Examples:"
+		echo "  $0                  # Auto-detect and install"
+		echo "  $0 --dry-run        # Show what would be installed"
+		echo "  $0 zsh              # Install for zsh only"
+		echo "  $0 --dry-run all    # Show what would be installed for all shells"
+		exit 0
+		;;
+	*)
+		SHELL_TYPE="$1"
+		shift
+		;;
+	esac
+done
+
+# Set default shell type if not provided
+SHELL_TYPE="${SHELL_TYPE:-auto}"
 
 # Check if binary exists
 if ! command -v "$BINARY" &>/dev/null && [ ! -x "./bin/$BINARY" ]; then
@@ -18,7 +59,11 @@ else
 	BIN="$BINARY"
 fi
 
-echo "Installing shell completions for whisper-wrapper..."
+if [ "$DRY_RUN" = true ]; then
+	echo "🔍 Checking what completions would be installed for whisper-wrapper..."
+else
+	echo "Installing shell completions for whisper-wrapper..."
+fi
 echo ""
 
 # Detect shell and install accordingly
@@ -36,10 +81,15 @@ install_bash() {
 		target="$HOME/.local/share/bash-completion/completions/$BINARY"
 	fi
 
-	echo "Installing Bash completion to: $target"
-	$BIN completion bash >"$target"
-	echo "✅ Bash completion installed"
-	echo "   Reload your shell or run: source $target"
+	if [ "$DRY_RUN" = true ]; then
+		echo "[DRY RUN] Would install Bash completion to: $target"
+		echo "Command: $BIN completion bash > $target"
+	else
+		echo "Installing Bash completion to: $target"
+		$BIN completion bash >"$target"
+		echo "✅ Bash completion installed"
+		echo "   Reload your shell or run: source $target"
+	fi
 }
 
 install_zsh() {
@@ -58,24 +108,34 @@ install_zsh() {
 		target="$HOME/.local/share/zsh/site-functions/_$BINARY"
 	fi
 
-	echo "Installing Zsh completion to: $target"
-	$BIN completion zsh >"$target"
-	echo "✅ Zsh completion installed"
-	echo "   Reload your shell or run: compinit"
+	if [ "$DRY_RUN" = true ]; then
+		echo "[DRY RUN] Would install Zsh completion to: $target"
+		echo "Command: $BIN completion zsh > $target"
+	else
+		echo "Installing Zsh completion to: $target"
+		$BIN completion zsh >"$target"
+		echo "✅ Zsh completion installed"
+		echo "   Reload your shell or run: compinit"
+	fi
 }
 
 install_fish() {
 	local target="$HOME/.config/fish/completions/$BINARY.fish"
 
-	mkdir -p "$HOME/.config/fish/completions"
-	echo "Installing Fish completion to: $target"
-	$BIN completion fish >"$target"
-	echo "✅ Fish completion installed"
-	echo "   Completions will be available immediately"
+	if [ "$DRY_RUN" = true ]; then
+		echo "[DRY RUN] Would install Fish completion to: $target"
+		echo "Command: mkdir -p $HOME/.config/fish/completions && $BIN completion fish > $target"
+	else
+		mkdir -p "$HOME/.config/fish/completions"
+		echo "Installing Fish completion to: $target"
+		$BIN completion fish >"$target"
+		echo "✅ Fish completion installed"
+		echo "   Completions will be available immediately"
+	fi
 }
 
 # Detect current shell or install all
-case "${1:-auto}" in
+case "$SHELL_TYPE" in
 bash)
 	install_bash
 	;;
@@ -128,4 +188,8 @@ auto | *)
 esac
 
 echo ""
-echo "Installation complete!"
+if [ "$DRY_RUN" = true ]; then
+	echo "🔍 Dry run complete! Use without --dry-run to actually install."
+else
+	echo "✅ Installation complete!"
+fi
