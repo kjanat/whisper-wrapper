@@ -87,9 +87,11 @@ func main() {
 	// Value completions for some flags
 	_ = rootCmd.RegisterFlagCompletionFunc("output_format", enumCompletion("txt", "vtt", "srt", "tsv", "json", "all"))
 	_ = rootCmd.RegisterFlagCompletionFunc("task", enumCompletion("transcribe", "translate"))
-	_ = rootCmd.RegisterFlagCompletionFunc("language", enumCompletion(languageCodes...))
+	_ = rootCmd.RegisterFlagCompletionFunc("language", enumCompletion(append(languageCodes, languageNames...)...))
 	_ = rootCmd.RegisterFlagCompletionFunc("model", enumCompletion("tiny", "tiny.en", "base", "base.en", "small", "small.en", "medium", "medium.en", "large", "large-v1", "large-v2", "large-v3", "large-v3-turbo"))
-	_ = rootCmd.RegisterFlagCompletionFunc("device", enumCompletion("cpu", "cuda", "cuda:0"))
+	_ = rootCmd.RegisterFlagCompletionFunc("device", enumCompletion("cpu", "cuda", "cuda:0", "mps"))
+	_ = rootCmd.RegisterFlagCompletionFunc("model_dir", dirCompletion)
+	_ = rootCmd.RegisterFlagCompletionFunc("output_dir", dirCompletion)
 
 	// Add the completion subcommand
 	rootCmd.AddCommand(newCompletionCmd())
@@ -117,26 +119,29 @@ func enumCompletion(values ...string) func(*cobra.Command, []string, string) ([]
 func audioCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	// Let the shell complete files but filter by typical audio/video extensions supported by whisper/ffmpeg
 	exts := []string{
-		".wav", ".mp3", ".m4a", ".mp4", ".mpeg", ".mpga", ".webm", ".ogg", ".flac", ".wma", ".aac", ".opus", ".mov", ".mkv", ".avi",
+		// Audio
+		".wav", ".mp3", ".m4a", ".aac", ".flac", ".ogg", ".opus", ".wma", ".aiff", ".aif", ".alac", ".mpga",
+		// Video (commonly supported by ffmpeg)
+		".mp4", ".m4v", ".mov", ".mkv", ".webm", ".avi", ".wmv", ".flv", ".ts", ".m2ts", ".mts", ".3gp", ".mpeg", ".mpg", ".mpe",
 	}
 	return exts, cobra.ShellCompDirectiveFilterFileExt
 }
 
 func newCompletionCmd() *cobra.Command {
-    cmd := &cobra.Command{
-        Use:   "completion [bash|zsh|fish|powershell]",
-        Short: "Generate shell completion scripts",
+	cmd := &cobra.Command{
+		Use:   "completion [bash|zsh|fish|powershell]",
+		Short: "Generate shell completion scripts",
 		Long: "To load completions:\n\n" +
 			"Bash:\n  source <(whisper-wrapper completion bash)\n\n" +
 			"Zsh:\n  whisper-wrapper completion zsh > ${fpath[1]}/_whisper-wrapper\n\n" +
 			"Fish:\n  whisper-wrapper completion fish | source\n\n" +
 			"PowerShell:\n  whisper-wrapper completion powershell | Out-String | Invoke-Expression\n\n",
-        Args: cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-        ValidArgs: []string{
-            "bash", "zsh", "fish", "powershell",
-        },
-        RunE: func(cmd *cobra.Command, args []string) error {
-            switch args[0] {
+		Args: cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+		ValidArgs: []string{
+			"bash", "zsh", "fish", "powershell",
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			switch args[0] {
 			case "bash":
 				return rootCmd.GenBashCompletion(os.Stdout)
 			case "zsh":
@@ -155,4 +160,12 @@ func newCompletionCmd() *cobra.Command {
 
 var languageCodes = []string{
 	"af", "am", "ar", "as", "az", "ba", "be", "bg", "bn", "bo", "br", "bs", "ca", "cs", "cy", "da", "de", "el", "en", "es", "et", "eu", "fa", "fi", "fo", "fr", "gl", "gu", "ha", "haw", "he", "hi", "hr", "ht", "hu", "hy", "id", "is", "it", "ja", "jw", "ka", "kk", "km", "kn", "ko", "la", "lb", "ln", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "nn", "no", "oc", "pa", "pl", "ps", "pt", "ro", "ru", "sa", "sd", "si", "sk", "sl", "sn", "so", "sq", "sr", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "tr", "tt", "uk", "ur", "uz", "vi", "yi", "yo", "yue", "zh",
+}
+
+var languageNames = []string{
+	"Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Assamese", "Azerbaijani", "Bashkir", "Basque", "Belarusian", "Bengali", "Bosnian", "Breton", "Bulgarian", "Burmese", "Cantonese", "Castilian", "Catalan", "Chinese", "Croatian", "Czech", "Danish", "Dutch", "English", "Estonian", "Faroese", "Finnish", "Flemish", "French", "Galician", "Georgian", "German", "Greek", "Gujarati", "Haitian", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh", "Khmer", "Korean", "Lao", "Latin", "Latvian", "Letzeburgesch", "Lingala", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Mandarin", "Maori", "Marathi", "Moldavian", "Moldovan", "Mongolian", "Myanmar", "Nepali", "Norwegian", "Nynorsk", "Occitan", "Panjabi", "Pashto", "Persian", "Polish", "Portuguese", "Punjabi", "Pushto", "Romanian", "Russian", "Sanskrit", "Serbian", "Shona", "Sindhi", "Sinhala", "Sinhalese", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tagalog", "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Tibetan", "Turkish", "Turkmen", "Ukrainian", "Urdu", "Uzbek", "Valencian", "Vietnamese", "Welsh", "Yiddish", "Yoruba",
+}
+
+func dirCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveFilterDirs
 }
