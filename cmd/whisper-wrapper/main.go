@@ -145,11 +145,8 @@ func newCompletionCmd() *cobra.Command {
 			case "bash":
 				return rootCmd.GenBashCompletion(os.Stdout)
 			case "zsh":
-				if err := rootCmd.GenZshCompletion(os.Stdout); err != nil {
-					// Fallback to no-description template for environments missing template funcs
-					return rootCmd.GenZshCompletionNoDesc(os.Stdout)
-				}
-				return nil
+				// Use no-description template for better compatibility
+				return rootCmd.GenZshCompletionNoDesc(os.Stdout)
 			case "fish":
 				return rootCmd.GenFishCompletion(os.Stdout, true)
 			case "powershell":

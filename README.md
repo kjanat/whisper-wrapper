@@ -28,10 +28,12 @@ Shell Completions
 
 - Generate a completion script for your shell and install it:
   - Makefile helpers: `make completions` writes files into `./completions/`
-  - Bash: `whisper-wrapper completion bash > /etc/bash_completion.d/whisper-wrapper` (root) or `~/.local/share/bash-completion/whisper-wrapper`
-  - Zsh: `whisper-wrapper completion zsh > ${fpath[1]}/_whisper-wrapper`
+  - Bash: `whisper-wrapper completion bash > /etc/bash_completion.d/whisper-wrapper` (root) or `~/.local/share/bash-completion/completions/whisper-wrapper`
+  - Zsh: `whisper-wrapper completion zsh > ${fpath[1]}/_whisper-wrapper` or copy `./completions/_whisper-wrapper` to your zsh completion directory
   - Fish: `whisper-wrapper completion fish > ~/.config/fish/completions/whisper-wrapper.fish`
   - PowerShell: `whisper-wrapper completion powershell | Out-String | Invoke-Expression` (temporary session) or save to your profile directory.
+
+**Note**: For zsh, do NOT use `eval "$(whisper-wrapper completion zsh)"` - instead install the completion file to your zsh fpath.
 
 - The wrapper declares common Whisper flags for completion suggestions, but does not parse them; all flags are passed directly to the Python `whisper` CLI unchanged.
 
