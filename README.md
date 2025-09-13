@@ -2,12 +2,56 @@
 
 Small pass-through CLI that wraps the Python `whisper` command and mirrors its usage. It forwards all arguments directly to the underlying `whisper` binary and returns the same exit code. Now built with Cobra, it provides shell completion scripts for Bash, Zsh, Fish, and PowerShell.
 
-Build
+## Quick Start
+
+1. **Install whisper-wrapper**:
+
+   ```bash
+   go install github.com/kjanat/whisper-wrapper/cmd/whisper-wrapper@latest
+   ```
+
+2. **Install Python whisper** (if not already installed):
+
+   ```bash
+   pip install git+https://github.com/openai/whisper
+   ```
+
+3. **Use it like regular whisper**:
+
+   ```bash
+   whisper-wrapper --model small --language en audio.mp3
+   ```
+
+4. **Optional**: Install shell completions for better UX
+
+## Installation
+
+## From GitHub (Recommended)
+
+Install directly from the repository:
+
+```bash
+# Install latest version
+go install github.com/kjanat/whisper-wrapper/cmd/whisper-wrapper@latest
+
+# Install specific version/tag
+go install github.com/kjanat/whisper-wrapper/cmd/whisper-wrapper@v1.0.0
+```
+
+The binary will be installed to your `$GOBIN` directory (usually `~/go/bin/whisper-wrapper`).
+
+## From Source
 
 - Requires Go (1.21+ recommended). The module declares a newer Go version but standard toolchains work.
-- Build the binary:
-  - `make build` (outputs `bin/whisper-wrapper`)
-  - Or directly: `go build -o bin/whisper-wrapper ./cmd/whisper-wrapper`
+- Clone and build:
+
+  ```bash
+  git clone https://github.com/kjanat/whisper-wrapper.git
+  cd whisper-wrapper
+  make build  # outputs bin/whisper-wrapper
+  ```
+
+- Or build directly: `go build -o bin/whisper-wrapper ./cmd/whisper-wrapper`
 
 Usage
 
@@ -37,7 +81,7 @@ Shell Completions
 
 ### Automatic Installation
 
-Use the helper script to auto-detect your shell and install completions:
+If you installed from source, use the helper script to auto-detect your shell and install completions:
 
 ```bash
 ./install-completions.sh                  # Auto-detect current shell
@@ -51,6 +95,8 @@ Use the helper script to auto-detect your shell and install completions:
 ./install-completions.sh --dry-run all    # Check all shells
 ./install-completions.sh --whatif zsh     # Alternative dry-run syntax
 ```
+
+**For GitHub installs**: The script will automatically detect the system-installed `whisper-wrapper` binary.
 
 ### Manual Installation
 
