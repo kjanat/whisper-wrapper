@@ -1,4 +1,4 @@
-Whisper Wrapper (Go)
+# Whisper Wrapper (Go)
 
 Small pass-through CLI that wraps the Python `whisper` command and mirrors its usage. It forwards all arguments directly to the underlying `whisper` binary and returns the same exit code. Now built with Cobra, it provides shell completion scripts for Bash, Zsh, Fish, and PowerShell.
 
@@ -6,8 +6,8 @@ Build
 
 - Requires Go (1.21+ recommended). The module declares a newer Go version but standard toolchains work.
 - Build the binary:
-
-- `go build -o bin/whisper-wrapper ./cmd/whisper-wrapper`
+  - `make build` (outputs `bin/whisper-wrapper`)
+  - Or directly: `go build -o bin/whisper-wrapper ./cmd/whisper-wrapper`
 
 Usage
 
@@ -27,6 +27,7 @@ Configuration
 Shell Completions
 
 - Generate a completion script for your shell and install it:
+  - Makefile helpers: `make completions` writes files into `./completions/`
   - Bash: `whisper-wrapper completion bash > /etc/bash_completion.d/whisper-wrapper` (root) or `~/.local/share/bash-completion/whisper-wrapper`
   - Zsh: `whisper-wrapper completion zsh > ${fpath[1]}/_whisper-wrapper`
   - Fish: `whisper-wrapper completion fish > ~/.config/fish/completions/whisper-wrapper.fish`
@@ -38,3 +39,12 @@ Notes
 
 - Stdout and stderr are passed through verbatim from the underlying process.
 - Exit status matches the underlying `whisper` command when possible.
+
+Makefile targets
+
+- `make build` — build the binary to `bin/whisper-wrapper`
+- `make install` — `go install` to your `GOBIN`
+- `make fmt` — `go fmt ./...`
+- `make lint` — `golangci-lint run`
+- `make completions` — generate completion scripts into `./completions/`
+- `make clean` — remove build artifacts
