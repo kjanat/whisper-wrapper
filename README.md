@@ -26,6 +26,15 @@ Configuration
 
 Shell Completions
 
+## Prerequisites
+
+- **Bash**: Requires `bash-completion` package installed
+  - Manjaro/Arch: `sudo pacman -S bash-completion`
+  - Ubuntu/Debian: `sudo apt install bash-completion`
+  - macOS: `brew install bash-completion`
+
+## Installation
+
 - Generate a completion script for your shell and install it:
   - Makefile helpers: `make completions` writes files into `./completions/`
   - Bash: `whisper-wrapper completion bash > /etc/bash_completion.d/whisper-wrapper` (root) or `~/.local/share/bash-completion/completions/whisper-wrapper`
