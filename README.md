@@ -35,10 +35,27 @@ Shell Completions
 
 ## Installation
 
+### Automatic Installation
+
+Use the helper script to auto-detect your shell and install completions:
+```bash
+./install-completions.sh        # Auto-detect current shell
+./install-completions.sh bash   # Install for bash only
+./install-completions.sh zsh    # Install for zsh only
+./install-completions.sh fish   # Install for fish only
+./install-completions.sh all    # Install for all shells
+```
+
+### Manual Installation
+
 - Generate a completion script for your shell and install it:
   - Makefile helpers: `make completions` writes files into `./completions/`
-  - Bash: `whisper-wrapper completion bash > /etc/bash_completion.d/whisper-wrapper` (root) or `~/.local/share/bash-completion/completions/whisper-wrapper`
-  - Zsh: `whisper-wrapper completion zsh > ${fpath[1]}/_whisper-wrapper` or copy `./completions/_whisper-wrapper` to your zsh completion directory
+  - Bash: `whisper-wrapper completion bash > ~/.local/share/bash-completion/completions/whisper-wrapper`
+    - System-wide: `sudo whisper-wrapper completion bash > /etc/bash_completion.d/whisper-wrapper`
+  - Zsh:
+    - Oh My Zsh: `whisper-wrapper completion zsh > ~/.oh-my-zsh/completions/_whisper-wrapper`
+    - User directory: `whisper-wrapper completion zsh > ~/.local/share/zsh/site-functions/_whisper-wrapper`
+    - System-wide: `sudo whisper-wrapper completion zsh > /usr/share/zsh/site-functions/_whisper-wrapper`
   - Fish: `whisper-wrapper completion fish > ~/.config/fish/completions/whisper-wrapper.fish`
   - PowerShell: `whisper-wrapper completion powershell | Out-String | Invoke-Expression` (temporary session) or save to your profile directory.
 
